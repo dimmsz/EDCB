@@ -46,19 +46,11 @@
         </local:ContextMenuEx>
     </UserControl.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
-        <TabControl Name="tabNetworkFilter" Grid.Row="0" Grid.ColumnSpan="2" Margin="10,5,10,0" SelectionChanged="tabNetworkFilter_SelectionChanged">
-            <TabItem Header="地上波" />
-            <TabItem Header="BS / CS" />
-        </TabControl>
-        <ListView Grid.Row="1" Name="listView_key" Margin="10" SelectionMode="Extended" ContextMenu="{DynamicResource itemHeader}" ContextMenuOpening="ContextMenu_Header_ContextMenuOpening" GridViewColumnHeader.Click="GridViewColumnHeader_Click" MouseEnter="listView_key_MouseEnter" MouseLeave="listView_key_MouseLeave">
+        <ListView Name="listView_key" Margin="10" SelectionMode="Extended" ContextMenu="{DynamicResource itemHeader}" ContextMenuOpening="ContextMenu_Header_ContextMenuOpening" GridViewColumnHeader.Click="GridViewColumnHeader_Click" MouseEnter="listView_key_MouseEnter" MouseLeave="listView_key_MouseLeave">
             <ListView.Resources>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
