@@ -30,16 +30,9 @@ namespace EpgTimer
 
         private IEnumerable<EpgAutoDataItem> GetVisibleItems(IEnumerable<EpgAutoDataItem> source)
         {
-            int tab = tabNetworkFilter == null ? 0 : tabNetworkFilter.SelectedIndex;
-            return source.Where(info =>
-            {
-                string network = info.NetworkKey;
-                // サービス指定なしは全放送波対象なので両方に表示する。
-                if (network == "なし") return true;
-                if (tab == 0) return network.IndexOf("地デジ", StringComparison.Ordinal) >= 0;
-                return network.IndexOf("BS", StringComparison.Ordinal) >= 0 ||
-                       network.IndexOf("CS", StringComparison.Ordinal) >= 0;
-            });
+            // この画面では地上波の自動予約登録だけを表示する。
+            // BS/CSの登録データは削除せず、必要な場合は検索・EPG予約条件から編集できる。
+            return source.Where(info => info.NetworkKey.IndexOf("地デジ", StringComparison.Ordinal) >= 0);
         }
 
         private void ApplyNetworkFilter()
@@ -67,7 +60,6 @@ namespace EpgTimer
                 stackPanel_button.Visibility = Visibility.Collapsed;
             }
             listView_key.AlternationCount = Settings.Instance.ResAlternationCount;
-            tabNetworkFilter.SelectedIndex = 0;
         }
 
         public void SaveSize()
@@ -478,13 +470,6 @@ namespace EpgTimer
             }
         }
 
-        private void tabNetworkFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.OriginalSource == tabNetworkFilter)
-            {
-                ApplyNetworkFilter();
-            }
-        }
 
         private void button_up_Click(object sender, RoutedEventArgs e)
         {
