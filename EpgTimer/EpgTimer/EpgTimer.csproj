@@ -43,12 +43,11 @@
   </PropertyGroup>
 
 
-  <!-- Personal-use publish: one self-contained x64 executable. -->
+  <!-- Personal-use publish: self-contained x64 publish folder. -->
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
-    <PublishSingleFile>true</PublishSingleFile>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <PublishSingleFile>false</PublishSingleFile>
     <PublishTrimmed>false</PublishTrimmed>
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishDir>..\..\x64\Release\publish\</PublishDir>
