@@ -42,4 +42,16 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
 
+
+  <!-- Personal-use publish: one self-contained x64 executable. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishDir>..\..\x64\Release\publish\</PublishDir>
+  </PropertyGroup>
+
 </Project>
