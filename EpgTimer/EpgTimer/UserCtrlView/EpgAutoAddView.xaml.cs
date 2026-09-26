@@ -28,6 +28,27 @@ namespace EpgTimer
 
         private Dictionary<string, GridViewColumn> columnList;
 
+        private IEnumerable<EpgAutoDataItem> GetVisibleItems(IEnumerable<EpgAutoDataItem> source)
+        {
+            int tab = tabNetworkFilter == null ? 0 : tabNetworkFilter.SelectedIndex;
+            return source.Where(info =>
+            {
+                string network = info.NetworkKey;
+                // サービス指定なしは全放送波対象なので両方に表示する。
+                if (network == "なし") return true;
+                if (tab == 0) return network.IndexOf("地デジ", StringComparison.Ordinal) >= 0;
+                return network.IndexOf("BS", StringComparison.Ordinal) >= 0 ||
+                       network.IndexOf("CS", StringComparison.Ordinal) >= 0;
+            });
+        }
+
+        private void ApplyNetworkFilter()
+        {
+            IEnumerable<EpgAutoDataItem> source = resultListMoved ?? resultList;
+            listView_key.ItemsSource = GetVisibleItems(source).ToList();
+        }
+
+
         public EpgAutoAddView()
         {
             InitializeComponent();
@@ -46,6 +67,7 @@ namespace EpgTimer
                 stackPanel_button.Visibility = Visibility.Collapsed;
             }
             listView_key.AlternationCount = Settings.Instance.ResAlternationCount;
+            tabNetworkFilter.SelectedIndex = 0;
         }
 
         public void SaveSize()
@@ -300,20 +322,23 @@ namespace EpgTimer
         {
             EpgAutoDataItem item_Src1 = listView_key.SelectedItem as EpgAutoDataItem;
             if (item_Src1 == null) { return; }
-            int index_Src1 = (resultListMoved ?? resultList).IndexOf(item_Src1);
-            int index_Dst1 = index_Src1 - 1;
-            if (up0 == false)
-            {
-                index_Dst1 = index_Src1 + 1;
-            }
-            if (0 <= index_Dst1 && index_Dst1 < (resultListMoved ?? resultList).Count)
-            {
-                resultListMoved = (resultListMoved ?? resultList).ToList();
-                resultListMoved.RemoveAt(index_Src1);
-                resultListMoved.Insert(index_Dst1, item_Src1);
+            List<EpgAutoDataItem> working = resultListMoved ?? resultList;
+            List<EpgAutoDataItem> visible = GetVisibleItems(working).ToList();
+            int visibleIndex = visible.IndexOf(item_Src1);
+            int targetVisibleIndex = visibleIndex + (up0 ? -1 : 1);
+            if (visibleIndex < 0 || targetVisibleIndex < 0 || targetVisibleIndex >= visible.Count) return;
+
+            EpgAutoDataItem target = visible[targetVisibleIndex];
+            int index_Src1 = working.IndexOf(item_Src1);
+            int index_Dst1 = working.IndexOf(target) + (up0 ? 0 : 1);
+            if (index_Src1 < index_Dst1) index_Dst1--;
+
+            resultListMoved = working.ToList();
+            resultListMoved.RemoveAt(index_Src1);
+            resultListMoved.Insert(index_Dst1, item_Src1);
 
                 lastAscendingSortedHeader = null;
-                listView_key.ItemsSource = resultListMoved;
+                ApplyNetworkFilter();
                 button_saveItemOrder.IsEnabled = true;
                 button_reloadItem.IsEnabled = true;
                 textBox_ItemOrderStatus.Visibility = Visibility.Visible;
@@ -363,7 +388,7 @@ namespace EpgTimer
         {
             resultListMoved = null;
             lastAscendingSortedHeader = null;
-            listView_key.ItemsSource = resultList;
+            ApplyNetworkFilter();
             button_saveItemOrder.IsEnabled = false;
             button_reloadItem.IsEnabled = false;
             textBox_ItemOrderStatus.Visibility = Visibility.Hidden;
@@ -384,7 +409,7 @@ namespace EpgTimer
                     resultListMoved = resultListMoved ?? resultList;
                     resultListMoved = (desc ? resultListMoved.OrderByDescending(a => p.GetValue(a, null)) : resultListMoved.OrderBy(a => p.GetValue(a, null))).ToList();
                     // UI更新
-                    listView_key.ItemsSource = resultListMoved;
+                    ApplyNetworkFilter();
                     button_saveItemOrder.IsEnabled = true;
                     button_reloadItem.IsEnabled = true;
                     textBox_ItemOrderStatus.Visibility = Visibility.Visible;
@@ -451,6 +476,14 @@ namespace EpgTimer
                         e.Handled = true;
                         break;
                 }
+            }
+        }
+
+        private void tabNetworkFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.OriginalSource == tabNetworkFilter)
+            {
+                ApplyNetworkFilter();
             }
         }
 
