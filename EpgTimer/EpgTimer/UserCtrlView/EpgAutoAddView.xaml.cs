@@ -337,12 +337,11 @@ namespace EpgTimer
             resultListMoved.RemoveAt(index_Src1);
             resultListMoved.Insert(index_Dst1, item_Src1);
 
-                lastAscendingSortedHeader = null;
-                ApplyNetworkFilter();
-                button_saveItemOrder.IsEnabled = true;
-                button_reloadItem.IsEnabled = true;
-                textBox_ItemOrderStatus.Visibility = Visibility.Visible;
-            }
+            lastAscendingSortedHeader = null;
+            ApplyNetworkFilter();
+            button_saveItemOrder.IsEnabled = true;
+            button_reloadItem.IsEnabled = true;
+            textBox_ItemOrderStatus.Visibility = Visibility.Visible;
         }
 
         void saveItemOrder()
